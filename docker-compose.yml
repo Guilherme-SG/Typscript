@@ -1,0 +1,32 @@
+version: "3"
+services:
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - ${MONGODB_PORT}:27017
+    networks:
+      - "production-network"
+  
+  node:
+      image: node:latest
+      command: npm start
+      container_name: app
+      ports:
+        - ${APP_PORT}:${APP_PORT}
+      networks:
+        - "production-network"
+      volumes:
+        - .:/usr/src/app
+      working_dir: /usr/src/app
+      depends_on:
+        - mongo
+      logging:
+        driver: "json-file"
+        options:
+            max-size: "10m"
+            max-file: "5"
+
+networks:
+    production-network:
+      driver: bridge
